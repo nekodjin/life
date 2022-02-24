@@ -105,3 +105,7 @@ for the `.c(_, _)` method into the `.i(_, _)` method, I forgot to change the
 logic such that it indexes into the intermediate matrix instead of the current
 one. Oops.
 
+> # Commit:
+> ### correct compilation errors
+> 4c1f381dac1f2d5dd5fc4a30b1fc21ff24b64d11
+
