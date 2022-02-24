@@ -36,3 +36,20 @@ With that in mind, I think that a good place to start will be to implement some
 data structure designed for storing the state of the matrix and performing
 relevant operations on it. And so the aventure begins.
 
+> Commit:
+> 4b86426c78b4b300f56581a084a66ce0c5807e39
+> preamble
+
+As the matrix data structure represents the 'world' that the cells inhabit, I'm
+going to name it `World` (and place it within a corresponding `world` module).
+
+The `World` structure I've come up with has the following fields:
+-   `current: bool`: which copy of the matrix is the current
+-   `w: usize`: the width of the world
+-   `h: usize`: the height of the world
+-   `a: Vec<Vec<bool>>`: one of two copies of the world
+-   `b: Vec<Vec<bool>>`: the other of two copies of the world
+
+It's also got a `World::new` associated function that initializes a new world
+with a given width and height, filled with dead cells.
+
