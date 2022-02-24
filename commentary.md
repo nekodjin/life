@@ -94,3 +94,14 @@ modulus, and for negative indices it is just a matter of repeatedly adding the
 appropriate dimension until it is non-negative. The indexing functions return
 a mutable reference to the relevant cell.
 
+> # Commit:
+> ### add .c(\_, \_), .i(\_, \_)
+> bfd39324c821112ad9eef8ffd6b4fb1dca4b972b
+
+This is the point at which I remember to do something that I'd forgotten: check
+to make sure that my code compiles. Alas, it does not. I fix up the errors and
+make another commit. Embarrasingly, I discover that when I copy-pasted the code
+for the `.c(_, _)` method into the `.i(_, _)` method, I forgot to change the
+logic such that it indexes into the intermediate matrix instead of the current
+one. Oops.
+

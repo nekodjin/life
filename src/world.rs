@@ -1,10 +1,12 @@
 pub type Cell = bool;
 
-pub const A: bool = false;
-pub const B: bool = true;
-
 pub const LIVE: Cell = false;
 pub const DEAD: Cell = true;
+
+const A: bool = false;
+const B: bool = true;
+
+const IMAX: usize = isize::MAX as usize;
 
 pub struct World {
     current: bool,
@@ -16,9 +18,9 @@ pub struct World {
 
 impl World {
     pub fn new(width: usize, height: usize) -> Self {
-        if width > isize::MAX || height > isize::MAX {
+        if width > IMAX || height > IMAX {
             panic!(
-                "dimensions must not be greater than {isize::MAX}"
+                "dimensions must not be greater than {IMAX}"
             );
         }
 
@@ -32,45 +34,45 @@ impl World {
     }
 
     // index into the current copy of the world
-    pub fn c<'a>(&mut self, mut w: isize, mut h: isize) -> &'a mut Cell {
+    pub fn c<'a>(&'a mut self, mut w: isize, mut h: isize) -> &'a mut Cell {
         let matrix = match self.current {
             A => &mut self.a,
             B => &mut self.b,
         };
 
         while w < 0 {
-            w += self.w;
+            w += self.w as isize;
         }
 
-        w %= self.w;
+        w %= self.w as isize;
 
         while h < 0 {
-            h += self.h;
+            h += self.h as isize;
         }
 
-        h %= self.h;
+        h %= self.h as isize;
 
         &mut matrix[w as usize][h as usize]
     }
 
     // index into the intermediate copy of the world
-    fn i<'a>(&mut self, mut w: isize, mut h: isize) -> &'a mut Cell {
+    fn i<'a>(&'a mut self, mut w: isize, mut h: isize) -> &'a mut Cell {
         let matrix = match self.current {
-            A => &mut self.a,
-            B => &mut self.b,
+            A => &mut self.b,
+            B => &mut self.a,
         };
 
         while w < 0 {
-            w += self.w;
+            w += self.w as isize;
         }
 
-        w %= self.w;
+        w %= self.w as isize;
 
         while h < 0 {
-            h += self.h;
+            h += self.h as isize;
         }
 
-        h %= self.h;
+        h %= self.h as isize;
 
         &mut matrix[w as usize][h as usize]
     }
