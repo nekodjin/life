@@ -14,6 +14,12 @@ pub struct World {
 
 impl World {
     pub fn new(width: usize, height: usize) -> Self {
+        if width > isize::MAX || height > isize::MAX {
+            panic!(
+                "dimensions must not be greater than {isize::MAX}"
+            );
+        }
+
         World {
             current: A,
             w: width,
