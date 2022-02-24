@@ -53,3 +53,37 @@ The `World` structure I've come up with has the following fields:
 It's also got a `World::new` associated function that initializes a new world
 with a given width and height, filled with dead cells.
 
+> # Commit:
+> ### create world structure
+> 0c857717d777ab6f15b8567c4e9f797b2e84a4bf
+
+The next thing to think about is operations that will be performed on it. There
+are two general classes of operations.
+
+The first class is operations performed by external code. These operations will
+exclusively interact with the current copy of the world, and fall into one of
+two subcategories:
+1.  Reading from the current copy of the world (for example, to render it)
+2.  Writing to the current copy of the world (for example, to load the starting
+    state of the world)
+
+The second class is operations performed by internal code. These operations
+almost exclusively interact with the intermediate copy of the world, as the
+vast majority of them will be performed by the methods that compute the next
+world-state.
+
+For these reasons, it is necessary to have a method that allows indexing into
+the current copy of the world, and a similar one for the intermediate copy.
+
+At this point, it occurs to me that as I'll be implementing a wrapping version
+of the Game of Life, it would be helpful if these indexing methods allowed for
+signed indices which will automatically be mapped to a point within the world
+through something resembling modulo arithmetic. Of course, if the world is to
+be indexed using `isize`s, it should never be permitted to initialize a world
+to dimensions larger than `isize::MAX`. This restriction will have to be added
+to the `World::new` function.
+
+> # Commit:
+> ### restrict dimensions in constructor
+> 3ed23d35030cdbecddc8048e02aa532943fec17c
+
