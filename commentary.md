@@ -36,9 +36,9 @@ With that in mind, I think that a good place to start will be to implement some
 data structure designed for storing the state of the matrix and performing
 relevant operations on it. And so the aventure begins.
 
-> Commit:
+> # Commit:
+> ### preamble
 > 4b86426c78b4b300f56581a084a66ce0c5807e39
-> preamble
 
 As the matrix data structure represents the 'world' that the cells inhabit, I'm
 going to name it `World` (and place it within a corresponding `world` module).
