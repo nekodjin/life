@@ -13,3 +13,5 @@ Feel free to poke around the commit history to see what I did in chronological
 orer - in fact, the commentary will be annotated with a notice every time I
 make a commit so that you can follow along as I write it.
 
+[md]: ./commentary.md
+
