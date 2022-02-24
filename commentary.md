@@ -87,3 +87,10 @@ to the `World::new` function.
 > ### restrict dimensions in constructor
 > 3ed23d35030cdbecddc8048e02aa532943fec17c
 
+The indexing functions are fairly easy to implement. They take an `isize` for
+the width and an `isize` for the height. These are normalized to fit within the
+bounds of the world, which for non-negative indices is done with a simple
+modulus, and for negative indices it is just a matter of repeatedly adding the
+appropriate dimension until it is non-negative. The indexing functions return
+a mutable reference to the relevant cell.
+

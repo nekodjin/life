@@ -1,15 +1,17 @@
+pub type Cell = bool;
+
 pub const A: bool = false;
 pub const B: bool = true;
 
-pub const LIVE: bool = false;
-pub const DEAD: bool = true;
+pub const LIVE: Cell = false;
+pub const DEAD: Cell = true;
 
 pub struct World {
     current: bool,
     w: usize,
     h: usize,
-    a: Vec<Vec<bool>>,
-    b: Vec<Vec<bool>>,
+    a: Vec<Vec<Cell>>,
+    b: Vec<Vec<Cell>>,
 }
 
 impl World {
@@ -27,6 +29,50 @@ impl World {
             a: vec![vec![DEAD; height]; width],
             b: vec![vec![DEAD; height]; width],
         }
+    }
+
+    // index into the current copy of the world
+    pub fn c<'a>(&mut self, mut w: isize, mut h: isize) -> &'a mut Cell {
+        let matrix = match self.current {
+            A => &mut self.a,
+            B => &mut self.b,
+        };
+
+        while w < 0 {
+            w += self.w;
+        }
+
+        w %= self.w;
+
+        while h < 0 {
+            h += self.h;
+        }
+
+        h %= self.h;
+
+        &mut matrix[w as usize][h as usize]
+    }
+
+    // index into the intermediate copy of the world
+    fn i<'a>(&mut self, mut w: isize, mut h: isize) -> &'a mut Cell {
+        let matrix = match self.current {
+            A => &mut self.a,
+            B => &mut self.b,
+        };
+
+        while w < 0 {
+            w += self.w;
+        }
+
+        w %= self.w;
+
+        while h < 0 {
+            h += self.h;
+        }
+
+        h %= self.h;
+
+        &mut matrix[w as usize][h as usize]
     }
 }
 
