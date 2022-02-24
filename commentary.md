@@ -109,3 +109,22 @@ one. Oops.
 > ### correct compilation errors
 > 4c1f381dac1f2d5dd5fc4a30b1fc21ff24b64d11
 
+At this point, I want to implement a debug formatter so that I can print the
+state of both matrices and check that everything is working correctly.
+
+It should be a simple matter of iterating over the matrices and printing each
+cell. Dead cells will be associated with a space, while living cells will use
+the "filled box" character (█).
+
+Implementing the `fmt::Debug` trait reveals a miscalculation I made: in an
+attempt to reduce complexity, I created only two indexing functions, both of
+which return mutable references. This is a problem because it requires a
+mutable reference to `self` to begin with. I'll clone both functions so that
+there can be an immutable and a mutable version of each. Since the immutable
+versions... don't need to be mutated, and since the value of each cell is only
+a single boolean anyway, the immutable versions will just return the value of
+the cell without being wrapped in a reference. In all honesty, I'm so annoyed
+with this system that at some point I will probably return to this and figure
+out a way to implement `ops::Index` and `ops::IndexMut` on `World`, but that's
+not my current focus.
+

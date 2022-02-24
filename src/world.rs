@@ -1,3 +1,5 @@
+use std::fmt;
+
 pub type Cell = bool;
 
 pub const LIVE: Cell = false;
@@ -33,8 +35,30 @@ impl World {
         }
     }
 
-    // index into the current copy of the world
-    pub fn c<'a>(&'a mut self, mut w: isize, mut h: isize) -> &'a mut Cell {
+    // index into the current copy of the world (immutable)
+    pub fn c(&self, mut w: isize, mut h: isize) -> Cell {
+        let matrix = match self.current {
+            A => &self.a,
+            B => &self.b,
+        };
+
+        while w < 0 {
+            w += self.w as isize;
+        }
+
+        w %= self.w as isize;
+
+        while h < 0 {
+            h += self.h as isize;
+        }
+
+        h %= self.h as isize;
+
+        matrix[w as usize][h as usize]
+    }
+
+    // index into the current copy of the world (mutable)
+    pub fn c_mut<'a>(&'a mut self, mut w: isize, mut h: isize) -> &'a mut Cell {
         let matrix = match self.current {
             A => &mut self.a,
             B => &mut self.b,
@@ -55,8 +79,30 @@ impl World {
         &mut matrix[w as usize][h as usize]
     }
 
-    // index into the intermediate copy of the world
-    fn i<'a>(&'a mut self, mut w: isize, mut h: isize) -> &'a mut Cell {
+    // index into the intermediate copy of the world (immutable)
+    fn i(&self, mut w: isize, mut h: isize) -> Cell {
+        let matrix = match self.current {
+            A => &self.b,
+            B => &self.a,
+        };
+
+        while w < 0 {
+            w += self.w as isize;
+        }
+
+        w %= self.w as isize;
+
+        while h < 0 {
+            h += self.h as isize;
+        }
+
+        h %= self.h as isize;
+
+        matrix[w as usize][h as usize]
+    }
+
+    // index into the intermediate copy of the world (mutable)
+    fn i_mut<'a>(&'a mut self, mut w: isize, mut h: isize) -> &'a mut Cell {
         let matrix = match self.current {
             A => &mut self.b,
             B => &mut self.a,
@@ -75,6 +121,42 @@ impl World {
         h %= self.h as isize;
 
         &mut matrix[w as usize][h as usize]
+    }
+}
+
+impl fmt::Debug for World {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        writeln!(f, "Current: {}x{}", self.w, self.h)?;
+
+        for x in 0..self.w as isize {
+            for y in 0..self.h as isize {
+                write!(f, "{}",
+                    match self.c(x, y) {
+                        DEAD => " ",
+                        LIVE => "█",
+                    },
+                )?;
+            }
+
+            writeln!(f, "")?;
+        }
+
+        writeln!(f, "Intermediate: {}x{}", self.w, self.h)?;
+
+        for x in 0..self.w as isize {
+            for y in 0..self.h as isize {
+                write!(f, "{}",
+                    match self.i(x, y) {
+                        DEAD => " ",
+                        LIVE => "█",
+                    },
+                )?;
+            }
+
+            writeln!(f, "")?;
+        }
+
+        Ok(())
     }
 }
 
