@@ -289,3 +289,28 @@ world.cycle();
 println!("{world:?}");
 ```
 
+> # Commit:
+> ### test with 2-cycle
+> dda28732dd9581c414e8f005947e14423e973d6f
+
+Alas, all is not well. For whatever reason, the intermediate copy is never
+changed - so when a cycle happens, the only thing that happens is that the two
+copies switch roles. I suspect that the cause of this is some error in my
+`inter` method resulting in none of the writes ever actually occurring.
+
+---
+
+...
+
+Man I feel stupid. Nothing was wrong with the `inter` method at all. Luckily,
+I remembered that I had literally copy/pasted the method's code from my
+`ops::IndexMut` implementation, which I already knew worked. That prevented me
+from following this red herring too far down the rabbithole. No, the problem
+was in the code of the `cycle` method. Closer inspection of it revealed a
+subtle mistake: instead of using `x` and `y`, which were the loop variables,
+I'd used `w` and `h`, which refer to the width and height of the world and in
+this context are effectively constants. Note to self: using an entire word as a
+variable name is ok - good, even. (Of course, just because I wrote that note
+doesn't mean I actually changed the variable names. I am a masochist after
+all.)
+

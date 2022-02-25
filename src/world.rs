@@ -44,30 +44,30 @@ impl World {
         let w = self.w as isize;
         let h = self.h as isize;
 
-        for x in 0..self.w {
-            for y in 0..self.h {
+        for x in 0..w {
+            for y in 0..h {
                 let mut live_cells = 0;
 
-                if self[(w-1, h-1)] == Cell::Live { live_cells += 1; }
-                if self[(w+0, h-1)] == Cell::Live { live_cells += 1; }
-                if self[(w+1, h-1)] == Cell::Live { live_cells += 1; }
-                if self[(w+1, h+0)] == Cell::Live { live_cells += 1; }
-                if self[(w+1, h+1)] == Cell::Live { live_cells += 1; }
-                if self[(w+0, h+1)] == Cell::Live { live_cells += 1; }
-                if self[(w-1, h+1)] == Cell::Live { live_cells += 1; }
-                if self[(w-1, h+0)] == Cell::Live { live_cells += 1; }
+                if self[(x-1, y-1)] == Cell::Live { live_cells += 1; }
+                if self[(x+0, y-1)] == Cell::Live { live_cells += 1; }
+                if self[(x+1, y-1)] == Cell::Live { live_cells += 1; }
+                if self[(x+1, y+0)] == Cell::Live { live_cells += 1; }
+                if self[(x+1, y+1)] == Cell::Live { live_cells += 1; }
+                if self[(x+0, y+1)] == Cell::Live { live_cells += 1; }
+                if self[(x-1, y+1)] == Cell::Live { live_cells += 1; }
+                if self[(x-1, y+0)] == Cell::Live { live_cells += 1; }
 
                 if live_cells == 3 {
-                    *self.inter(w, h) = Cell::Live;
+                    *self.inter(x, y) = Cell::Live;
                     continue;
                 }
 
                 if live_cells == 2 {
-                    *self.inter(w, h) = self[(w, h)];
+                    *self.inter(x, y) = self[(x, y)];
                     continue;
                 }
 
-                *self.inter(w, h) = Cell::Dead;
+                *self.inter(x, y) = Cell::Dead;
             }
         }
 
