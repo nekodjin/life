@@ -314,3 +314,44 @@ variable name is ok - good, even. (Of course, just because I wrote that note
 doesn't mean I actually changed the variable names. I am a masochist after
 all.)
 
+> # Commit:
+> ### correct cycle implementation
+> 81b5a19c056f8784efcd599d22379314859c511d
+
+Well, now that that's fixed, I ran the test again and it worked perfectly! It's
+a bit hard to tell because the non-square nature of terminal characters fucks
+up the dimensions of the line, but it is a three by one line that alternates
+between vertical and horizontal!
+
+For a more comprehensive test, I'm going to make a glider. Here's the code:
+
+```rs
+let mut world = World::new(10, 10);
+
+world[(2, 1)] = Cell::Live;
+world[(3, 2)] = Cell::Live;
+world[(1, 3)] = Cell::Live;
+world[(2, 3)] = Cell::Live;
+world[(3, 3)] = Cell::Live;
+
+for _ in 0..20 { world.cycle(); }
+
+println!("{world:?}");
+```
+
+A glider moves across the screen in a diagonal direction. The way that I've
+written it, the glider will move towards the bottom right. The period of the
+glider's cycle is 4 world cycles, and after each cycle it will have moved 1
+unit in its direction of travel. Therefore, after 20 cycles, we should expect
+the glider to have moved down 5 cells and to the right 5 cells. With world size
+set to 10x10 and the glider beginning in the top left, we should expect to see
+it end up in the bottom right. Let's test it out!
+
+---
+
+It worked perfectly! Now I could be wrong but at this point, I feel comfortable
+claiming that I've implemented Conway's Game of Life. Success!
+
+The next stage of this project will be to figure out how to properly render
+the world in a window.
+
