@@ -256,3 +256,9 @@ intermediate copy, and then when that is finished it will swap the two.
 It is done. Surprisingly, it was less painful than I'd anticipated. We'll see
 if it actually works!
 
+> # Commit:
+> ### implement cycle method
+> b7059eff36fa68cb2327c4ee36a107c39b971e76
+
+Ugh. It didn't work. More compile errors.
+

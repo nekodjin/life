@@ -195,10 +195,10 @@ impl fmt::Debug for World {
 
         writeln!(f, "Intermediate: {}x{}", self.w, self.h)?;
 
-        for y in 0..self.h as isize {
-            for x in 0..self.w as isize {
+        for y in 0..self.h {
+            for x in 0..self.w {
                 write!(f, "{}",
-                    match self.inter(x, y) {
+                    match inter[x][y] {
                         Cell::Dead => " ",
                         Cell::Live => "█",
                     },
