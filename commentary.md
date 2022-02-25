@@ -95,7 +95,7 @@ appropriate dimension until it is non-negative. The indexing functions return
 a mutable reference to the relevant cell.
 
 > # Commit:
-> ### add .c(\_, \_), .i(\_, \_)
+> ### add `.c(_, _), .i(_, _)`
 > bfd39324c821112ad9eef8ffd6b4fb1dca4b972b
 
 This is the point at which I remember to do something that I'd forgotten: check
@@ -127,4 +127,39 @@ the cell without being wrapped in a reference. In all honesty, I'm so annoyed
 with this system that at some point I will probably return to this and figure
 out a way to implement `ops::Index` and `ops::IndexMut` on `World`, but that's
 not my current focus.
+
+> # Commit:
+> ### implement `fmt::Debug` for `World`
+> e9599fe290a1209ae2e587ffefd5cf11a42a7cfa
+
+Now that I've implemented `fmt::Debug`, I think it's finally time to write some
+tests. I'll just put these in `main` for now. Since the intermediate copy is
+only accessible to code within the `world` module, I'll only be writing tests
+for the current copy for now.
+
+The test I wrote looks something like this:
+
+```rs
+let mut world = World::new(8, 6);
+
+*world.c_mut(0, 0) = LIVE;
+*world.c_mut(-1, -1) = LIVE;
+
+println!("{world:?}");
+```
+
+The expected output is that it will print out the current copy, which should
+have a live cell in the top left corner and in the bottom right corner, as well
+as the intermediate copy, which should be completely blank.
+
+The first time I ran the test, it did indeed print a blank grid for the
+intermediate matrix, and the current grid had the correct corners highlighted.
+However, since I had made the world rectangular instead of square, I was able
+to notice that somewhere along the line I'd flipped the horizontal and vertical
+axes. Skimming through my code, I quickly noticed that the issue was that I'd
+been iterating first through the columns and then through the rows in a nested
+loop - however, since printing occurs on a row-by-row basis, I should have been
+iterating first through the rows, and then through the columns in a nested
+loop. After fixing that, re-running the test demonstrated that all was in
+order.
 

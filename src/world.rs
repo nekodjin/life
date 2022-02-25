@@ -128,8 +128,8 @@ impl fmt::Debug for World {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "Current: {}x{}", self.w, self.h)?;
 
-        for x in 0..self.w as isize {
-            for y in 0..self.h as isize {
+        for y in 0..self.h as isize {
+            for x in 0..self.w as isize {
                 write!(f, "{}",
                     match self.c(x, y) {
                         DEAD => " ",
@@ -143,8 +143,8 @@ impl fmt::Debug for World {
 
         writeln!(f, "Intermediate: {}x{}", self.w, self.h)?;
 
-        for x in 0..self.w as isize {
-            for y in 0..self.h as isize {
+        for y in 0..self.h as isize {
+            for x in 0..self.w as isize {
                 write!(f, "{}",
                     match self.i(x, y) {
                         DEAD => " ",
