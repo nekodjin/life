@@ -232,3 +232,11 @@ That said, I did refactor them slightly (by which I mean, I copy/pasted the
 code from the `ops::{Index, IndexMut}` impls) and I renamed them to `inter` and
 `inter_mut` so that it is clearer what their functions are.
 
+> # Commit:
+> ### refactor indexing api
+> 2eac16f977760da7a4d713f59e36acd96c0d58d4
+
+This one will be short. At the suggestion of a friend, I'm replacing the `bool`
+field (`.current`) as well as the `bool`s used in the matrices with proper
+enums. I don't know why this didn't occur to me in the first place.
+

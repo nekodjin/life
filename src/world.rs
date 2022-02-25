@@ -1,22 +1,26 @@
 use std::fmt;
 use std::ops;
 
-pub type Cell = bool;
-
-pub const LIVE: Cell = false;
-pub const DEAD: Cell = true;
-
-const A: bool = false;
-const B: bool = true;
-
 const IMAX: usize = isize::MAX as usize;
 
 pub struct World {
-    current: bool,
+    state: WorldState,
     w: usize,
     h: usize,
     a: Vec<Vec<Cell>>,
     b: Vec<Vec<Cell>>,
+}
+
+#[derive(Debug, Copy, Clone)]
+pub enum Cell {
+    Live,
+    Dead,
+}
+
+#[derive(Debug, Copy, Clone)]
+enum WorldState {
+    ACurrent,
+    BCurrent,
 }
 
 impl World {
@@ -28,18 +32,18 @@ impl World {
         }
 
         World {
-            current: A,
+            state: WorldState::ACurrent,
             w: width,
             h: height,
-            a: vec![vec![DEAD; height]; width],
-            b: vec![vec![DEAD; height]; width],
+            a: vec![vec![Cell::Dead; height]; width],
+            b: vec![vec![Cell::Dead; height]; width],
         }
     }
 
     fn inter(&self, mut x: isize, mut y: isize) -> Cell {
-        let inter = match self.current {
-            A => &self.b,
-            B => &self.a,
+        let inter = match self.state {
+            WorldState::ACurrent => &self.b,
+            WorldState::BCurrent => &self.a,
         };
 
         let w = self.w as isize;
@@ -64,9 +68,9 @@ impl World {
     }
 
     fn inter_mut(&mut self, mut x: isize, mut y: isize) -> &mut Cell {
-        let inter = match self.current {
-            A => &mut self.b,
-            B => &mut self.a,
+        let inter = match self.state {
+            WorldState::ACurrent => &mut self.b,
+            WorldState::BCurrent => &mut self.a,
         };
 
         let w = self.w as isize;
@@ -95,9 +99,9 @@ impl ops::Index<(isize, isize)> for World {
     type Output = Cell;
 
     fn index(&self, idx: (isize, isize)) -> &Cell {
-        let matrix = match self.current {
-            A => &self.a,
-            B => &self.b,
+        let matrix = match self.state {
+            WorldState::ACurrent => &self.a,
+            WorldState::BCurrent => &self.b,
         };
 
         let w = self.w as isize;
@@ -127,9 +131,9 @@ impl ops::Index<(isize, isize)> for World {
 
 impl ops::IndexMut<(isize, isize)> for World {
     fn index_mut(&mut self, idx: (isize, isize)) -> &mut Cell {
-        let matrix = match self.current {
-            A => &mut self.a,
-            B => &mut self.b,
+        let matrix = match self.state {
+            WorldState::ACurrent => &mut self.a,
+            WorldState::BCurrent => &mut self.b,
         };
 
         let w = self.w as isize;
@@ -159,9 +163,9 @@ impl ops::IndexMut<(isize, isize)> for World {
 
 impl fmt::Debug for World {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let inter = match self.current {
-            A => &self.b,
-            B => &self.a,
+        let inter = match self.state {
+            WorldState::ACurrent => &self.b,
+            WorldState::BCurrent => &self.a,
         };
 
         writeln!(f, "Current: {}x{}", self.w, self.h)?;
@@ -170,8 +174,8 @@ impl fmt::Debug for World {
             for x in 0..self.w as isize {
                 write!(f, "{}",
                     match self[(x, y)] {
-                        DEAD => " ",
-                        LIVE => "█",
+                        Cell::Dead => " ",
+                        Cell::Live => "█",
                     },
                 )?;
             }
@@ -185,8 +189,8 @@ impl fmt::Debug for World {
             for x in 0..self.w as isize {
                 write!(f, "{}",
                     match self.inter(x, y) {
-                        DEAD => " ",
-                        LIVE => "█",
+                        Cell::Dead => " ",
+                        Cell::Live => "█",
                     },
                 )?;
             }
