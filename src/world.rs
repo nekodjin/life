@@ -1,4 +1,5 @@
 use std::fmt;
+use std::ops;
 
 pub type Cell = bool;
 
@@ -35,103 +36,140 @@ impl World {
         }
     }
 
-    // index into the current copy of the world (immutable)
-    pub fn c(&self, mut w: isize, mut h: isize) -> Cell {
+    fn inter(&self, mut x: isize, mut y: isize) -> Cell {
+        let inter = match self.current {
+            A => &self.b,
+            B => &self.a,
+        };
+
+        let w = self.w as isize;
+        let h = self.h as isize;
+
+        while x < 0 {
+            x += w;
+        }
+
+        x %= w;
+
+        while y < 0 {
+            y += h;
+        }
+
+        y %= h;
+
+        let x = x as usize;
+        let y = y as usize;
+
+        inter[x][y]
+    }
+
+    fn inter_mut(&mut self, mut x: isize, mut y: isize) -> &mut Cell {
+        let inter = match self.current {
+            A => &mut self.b,
+            B => &mut self.a,
+        };
+
+        let w = self.w as isize;
+        let h = self.h as isize;
+
+        while x < 0 {
+            x += w;
+        }
+
+        x %= w;
+
+        while y < 0 {
+            y += h;
+        }
+
+        y %= h;
+
+        let x = x as usize;
+        let y = y as usize;
+
+        &mut inter[x][y]
+    }
+}
+
+impl ops::Index<(isize, isize)> for World {
+    type Output = Cell;
+
+    fn index(&self, idx: (isize, isize)) -> &Cell {
         let matrix = match self.current {
             A => &self.a,
             B => &self.b,
         };
 
-        while w < 0 {
-            w += self.w as isize;
+        let w = self.w as isize;
+        let h = self.h as isize;
+
+        let mut x = idx.0;
+        let mut y = idx.1;
+
+        while x < 0 {
+            x += w;
         }
 
-        w %= self.w as isize;
+        x %= w;
 
-        while h < 0 {
-            h += self.h as isize;
+        while y < 0 {
+            y += h;
         }
 
-        h %= self.h as isize;
+        y %= h;
 
-        matrix[w as usize][h as usize]
+        let x = x as usize;
+        let y = y as usize;
+
+        &matrix[x][y]
     }
+}
 
-    // index into the current copy of the world (mutable)
-    pub fn c_mut<'a>(&'a mut self, mut w: isize, mut h: isize) -> &'a mut Cell {
+impl ops::IndexMut<(isize, isize)> for World {
+    fn index_mut(&mut self, idx: (isize, isize)) -> &mut Cell {
         let matrix = match self.current {
             A => &mut self.a,
             B => &mut self.b,
         };
 
-        while w < 0 {
-            w += self.w as isize;
+        let w = self.w as isize;
+        let h = self.h as isize;
+
+        let mut x = idx.0;
+        let mut y = idx.1;
+
+        while x < 0 {
+            x += w;
         }
 
-        w %= self.w as isize;
+        x %= w;
 
-        while h < 0 {
-            h += self.h as isize;
+        while y < 0 {
+            y += h;
         }
 
-        h %= self.h as isize;
+        y %= h;
 
-        &mut matrix[w as usize][h as usize]
-    }
+        let x = x as usize;
+        let y = y as usize;
 
-    // index into the intermediate copy of the world (immutable)
-    fn i(&self, mut w: isize, mut h: isize) -> Cell {
-        let matrix = match self.current {
-            A => &self.b,
-            B => &self.a,
-        };
-
-        while w < 0 {
-            w += self.w as isize;
-        }
-
-        w %= self.w as isize;
-
-        while h < 0 {
-            h += self.h as isize;
-        }
-
-        h %= self.h as isize;
-
-        matrix[w as usize][h as usize]
-    }
-
-    // index into the intermediate copy of the world (mutable)
-    fn i_mut<'a>(&'a mut self, mut w: isize, mut h: isize) -> &'a mut Cell {
-        let matrix = match self.current {
-            A => &mut self.b,
-            B => &mut self.a,
-        };
-
-        while w < 0 {
-            w += self.w as isize;
-        }
-
-        w %= self.w as isize;
-
-        while h < 0 {
-            h += self.h as isize;
-        }
-
-        h %= self.h as isize;
-
-        &mut matrix[w as usize][h as usize]
+        &mut matrix[x][y]
     }
 }
 
 impl fmt::Debug for World {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let inter = match self.current {
+            A => &self.b,
+            B => &self.a,
+        };
+
         writeln!(f, "Current: {}x{}", self.w, self.h)?;
 
         for y in 0..self.h as isize {
             for x in 0..self.w as isize {
                 write!(f, "{}",
-                    match self.c(x, y) {
+                    match self[(x, y)] {
                         DEAD => " ",
                         LIVE => "█",
                     },
@@ -146,7 +184,7 @@ impl fmt::Debug for World {
         for y in 0..self.h as isize {
             for x in 0..self.w as isize {
                 write!(f, "{}",
-                    match self.i(x, y) {
+                    match self.inter(x, y) {
                         DEAD => " ",
                         LIVE => "█",
                     },

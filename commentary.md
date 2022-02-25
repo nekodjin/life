@@ -163,3 +163,72 @@ iterating first through the rows, and then through the columns in a nested
 loop. After fixing that, re-running the test demonstrated that all was in
 order.
 
+> # Commit:
+> ### correct `fmt::Debug` implementation
+> d2f29dcc9e1ae612e5875ebd785b9bf86e9054aa
+
+> In all honesty, I'm so annoyed with this system that at some point I will
+> probably return to this and figure out a way to implement `ops::Index` and
+> `ops::IndexMut` on `World`, but that's not my current focus.
+
+The time has come.
+
+Basically, what I want to be able to do is this:
+
+```rs
+let mut world = World::new();
+
+world.c[0][0] = LIVE;
+world.c[-1][-1] = LIVE;
+```
+
+That's the ideal anyway. I may have to settle for indexing by a tuple of the
+x and y values. We'll see.
+
+---
+
+I've spent some time thinking about it, and I've come to a realization: any
+external code will only ever need to - or, in fact, be able to - index into
+the current copy of the matrix. Therefore from an outsider's perspective, being
+forced to index into the matrix through a field is completely redundant. Now,
+originally, my justification for this system was that if I implemented the
+indexing operators directly on `World`, that would leave no indexing API
+available for the intermediate copy of the world. What I've come to realize
+though, is that that's really not a big deal at all. What I've done in my
+`fmt::Debug` implementation, I can simply repeat for all the other methods in
+the `World` impl. That is, each method can simply begin with a match statement
+that retrieves a mutable reference to the correct vector, and the rest of the
+function will simply use that mutable reference. This significantly simplifies
+my task, since what I would have done otherwise (with two additional fields)
+would have required me to create two new types, or if I got irritated enough
+to accept defeat and index by a tuple, one. Not only that, the custom type of
+the fields would have needed to somehow store a mutable reference to the parent
+`World` object, and while I've admittedly not even attempted it, I'm not sure
+that Rust's ownership semantics allow that. (I suppose I should mention that as
+the author of the `bcbypass` crate I am really not that averse to using healthy
+servings of unsafe code, but that's besides the point.)
+
+---
+
+After implementing the `ops::Index` and `ops::IndexMut` traits, I had to
+rewrite my implementation of the `fmt::Debug` trait as well, to use the new
+indexing system. For the current copy, this was a joy:
+
+```rs
+...
+match self[(x, y)] {
+    ...
+}
+...
+```
+
+However, when I began to rewrite the part of the `fmt::Debug` implementation
+that prints the intermediate matrix, I quickly realized that without some sort
+of indexing function I would not only need to rewrite the logic for determining
+which matrix was the intermediate one in every method, but also the logic for
+normalizing the indices to within the bounds of the world. I decided this was
+going to be too much of a hassle, and so I kept the `i` and `i_mut` methods.
+That said, I did refactor them slightly (by which I mean, I copy/pasted the
+code from the `ops::{Index, IndexMut}` impls) and I renamed them to `inter` and
+`inter_mut` so that it is clearer what their functions are.
+
