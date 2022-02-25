@@ -262,3 +262,30 @@ if it actually works!
 
 Ugh. It didn't work. More compile errors.
 
+> # Commit:
+> ### correct compilation errors
+> ed94e005ceb37ac980d5d2b85e6bd342e51b4dfb
+
+Great! Now we can write a real test and see if I've implemented everything
+correctly. My first test will be a simple 2-cycle. According to the rules of
+Life, three live cells in a line surrounded by dead cells should alternate
+between vertical and horizontal forever. Here's the test:
+
+```rs
+let mut world = World::new(5, 5);
+
+world[(2, 1)] = Cell::Live;
+world[(2, 2)] = Cell::Live;
+world[(2, 3)] = Cell::Live;
+
+println!("{world:?}");
+
+world.cycle();
+
+println!("{world:?}");
+
+world.cycle();
+
+println!("{world:?}");
+```
+
