@@ -11,13 +11,13 @@ pub struct World {
     b: Vec<Vec<Cell>>,
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum Cell {
     Live,
     Dead,
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 enum WorldState {
     ACurrent,
     BCurrent,
@@ -40,34 +40,44 @@ impl World {
         }
     }
 
-    fn inter(&self, mut x: isize, mut y: isize) -> Cell {
-        let inter = match self.state {
-            WorldState::ACurrent => &self.b,
-            WorldState::BCurrent => &self.a,
-        };
-
+    pub fn cycle(&mut self) {
         let w = self.w as isize;
         let h = self.h as isize;
 
-        while x < 0 {
-            x += w;
+        for x in 0..self.w {
+            for y in 0..self.h {
+                let mut live_cells = 0;
+
+                if self[(w-1, h-1)] == Cell::Live { live_cells += 1; }
+                if self[(w+0, h-1)] == Cell::Live { live_cells += 1; }
+                if self[(w+1, h-1)] == Cell::Live { live_cells += 1; }
+                if self[(w+1, h+0)] == Cell::Live { live_cells += 1; }
+                if self[(w+1, h+1)] == Cell::Live { live_cells += 1; }
+                if self[(w+0, h+1)] == Cell::Live { live_cells += 1; }
+                if self[(w-1, h+1)] == Cell::Live { live_cells += 1; }
+                if self[(w-1, h+0)] == Cell::Live { live_cells += 1; }
+
+                if live_cells == 3 {
+                    *self.inter(w, h) = Cell::Live;
+                    continue;
+                }
+
+                if live_cells == 2 {
+                    *self.inter(w, h) = self[(w, h)];
+                    continue;
+                }
+
+                *self.inter(w, h) = Cell::Dead;
+            }
         }
 
-        x %= w;
-
-        while y < 0 {
-            y += h;
-        }
-
-        y %= h;
-
-        let x = x as usize;
-        let y = y as usize;
-
-        inter[x][y]
+        self.state = match self.state {
+            WorldState::ACurrent => WorldState::BCurrent,
+            WorldState::BCurrent => WorldState::ACurrent,
+        };
     }
 
-    fn inter_mut(&mut self, mut x: isize, mut y: isize) -> &mut Cell {
+    fn inter(&mut self, mut x: isize, mut y: isize) -> &mut Cell {
         let inter = match self.state {
             WorldState::ACurrent => &mut self.b,
             WorldState::BCurrent => &mut self.a,

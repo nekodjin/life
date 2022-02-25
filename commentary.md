@@ -240,3 +240,19 @@ This one will be short. At the suggestion of a friend, I'm replacing the `bool`
 field (`.current`) as well as the `bool`s used in the matrices with proper
 enums. I don't know why this didn't occur to me in the first place.
 
+> # Commit:
+> ### replace bools with enums
+> 4d375709b6aad3a9c018cc24e2278e9269c64886
+
+At long last, the time has come. I've run out of excuses to procrastinate. It's
+time to implement the rules of the Game of Life.
+
+I'll be implementing them via a method called `cycle`. Every time the method is
+called, it'll iterate through the current copy, writing the new state to the
+intermediate copy, and then when that is finished it will swap the two.
+
+---
+
+It is done. Surprisingly, it was less painful than I'd anticipated. We'll see
+if it actually works!
+
